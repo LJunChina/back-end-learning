@@ -1,0 +1,14 @@
+
+
+dependencies {
+}
+
+
+//插件配置
+buildscript {
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    }
+}
+
+
