@@ -4,3 +4,46 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds/
  */
+group 'com.backend.learning'
+version '0.0.1-SNAPSHOT'
+//子项目通用配置
+subprojects{
+
+    //插件配置
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    // JVM 版本号要求
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    //指定编码方式
+    [compileJava,compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+
+    //定义版本号
+    ext {
+        springCloudVersion = 'Edgware.SR5'
+        springBootVersion = '2.0.1.RELEASE'
+    }
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    }
+
+    configurations {
+        // 所有需要忽略的包定义在此
+        all*.exclude group: 'commons-logging'
+    }
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+    }
+
+    dependencies {
+        //通用依赖
+        //测试依赖
+        //testCompile('org.springframework.boot:spring-boot-starter-test')
+    }
+
+
+
+}
