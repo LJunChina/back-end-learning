@@ -1,7 +1,7 @@
 package com.backend.learning.nio;
 
 
-public class TccServiceApp {
+public class App {
 
 	public static void main(String[] args) {
 	}
