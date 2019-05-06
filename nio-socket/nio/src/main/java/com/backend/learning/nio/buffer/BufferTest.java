@@ -11,5 +11,6 @@ public class BufferTest {
         byte[] bytes = new byte[]{1,2,3};
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         System.out.println(buffer.getClass().getName());
+        /**1.ByteBuffers是非线程安全的*/
     }
 }
