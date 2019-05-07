@@ -26,6 +26,31 @@ public class FileChannelReadTest {
         /**4.验证{@link java.nio.channels.FileChannel#read(ByteBuffer)}方法将具有同步性*/
         System.out.println("=====================");
         testSyncRead();
+        /**4.验证{@link java.nio.channels.FileChannel#read(ByteBuffer)}方法从通道读取的字节放入缓冲区的remaining空间中*/
+        System.out.println("=====================");
+        testRemaining();
+    }
+
+    public static void testRemaining() throws IOException {
+        FileChannel channel = FileChannel.open(Paths.get("/localnas\\a.txt"), StandardOpenOption.READ,StandardOpenOption.WRITE);
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        buffer.position(1);
+        buffer.limit(3);
+        channel.read(buffer);
+        channel.close();
+        buffer.rewind();
+        //remaining = limit - position
+        System.out.println(buffer.limit());
+        for (int i = 0;i < buffer.limit();i++){
+            byte b = buffer.get();//position自增特性
+            if(b == 0){
+                System.out.println("空格");
+            }else {
+                System.out.println((char) b);
+            }
+
+        }
+
     }
 
     private static void testSyncRead() throws IOException, InterruptedException {

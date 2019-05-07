@@ -57,6 +57,31 @@ public class FileChannelTest {
         /**验证{@link FileChannel#write(ByteBuffer)}方法具有同步性*/
         testSync();
 
+        /**批量写操作{@link FileChannel#write(ByteBuffer[])} 实现于 {@link java.nio.channels.GatheringByteChannel#write(ByteBuffer[])}
+         * 说明其具备三个特性：
+         * 1.将1个ByteBuffer缓冲区中的remaining字节序列写入通道的当前位置
+         * 2.方法write是同步的
+         * 3.将多个ByteBuffer缓冲区中的remaining剩余字节序列写入通道的当前位置*/
+        System.out.println("======================");
+        /**1.验证{@link FileChannel#write(ByteBuffer[])}方法是从通道的当前位置开始写入的*/
+
+
+
+        //包含3个空格
+        testCurrentPosition();
+
+
+
+    }
+
+    private static void testCurrentPosition() throws IOException {
+        FileChannel fileChannel = FileChannel.open(Paths.get("/localnas\\d.txt"), StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        ByteBuffer numByte1 = ByteBuffer.wrap("12345678".getBytes());
+        ByteBuffer numByte2 = ByteBuffer.wrap("abcdefgh".getBytes());
+        ByteBuffer numByte3 = ByteBuffer.wrap("a1b2c3d4e5".getBytes());
+        fileChannel.position(3);
+        fileChannel.write(new ByteBuffer[] {numByte1,numByte2,numByte3});
+        fileChannel.close();
     }
 
 
