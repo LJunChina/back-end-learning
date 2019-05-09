@@ -64,14 +64,53 @@ public class FileChannelTest {
          * 3.将多个ByteBuffer缓冲区中的remaining剩余字节序列写入通道的当前位置*/
         System.out.println("======================");
         /**1.验证{@link FileChannel#write(ByteBuffer[])}方法是从通道的当前位置开始写入的*/
-
-
-
         //包含3个空格
         testCurrentPosition();
+        /**2.验证{@link FileChannel#write(ByteBuffer[])}方法将ByteBuffer的remaining写入通道*/
+        testRemaining2Channel();
+        /**3.验证{@link FileChannel#write(ByteBuffer[])}方法具有同步性*/
+        testWriteBuffersSync();
 
 
+    }
 
+    private static void testWriteBuffersSync() throws IOException, InterruptedException {
+        FileChannel fileChannel = FileChannel.open(Paths.get("/localnas\\f.txt"), StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                ByteBuffer wrap1 = ByteBuffer.wrap("abcdefg12345\n".getBytes());
+                ByteBuffer wrap2 = ByteBuffer.wrap("qwertyuio\n".getBytes());
+                try {
+                    fileChannel.write(new ByteBuffer[]{wrap1,wrap2});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            new Thread(() -> {
+                ByteBuffer wrap1 = ByteBuffer.wrap("poiuytrewq\n".getBytes());
+                ByteBuffer wrap2 = ByteBuffer.wrap("zxcvbnm\n".getBytes());
+                try {
+                    fileChannel.write(new ByteBuffer[]{wrap1,wrap2});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+        TimeUnit.SECONDS.sleep(3);
+        fileChannel.close();
+    }
+
+    private static void testRemaining2Channel() throws IOException {
+        FileChannel fileChannel = FileChannel.open(Paths.get("/localnas\\e.txt"), StandardOpenOption.READ, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        fileChannel.position(3);
+        ByteBuffer wrap1 = ByteBuffer.wrap("abcdefg12345".getBytes());
+        wrap1.position(2);
+        wrap1.limit(7);
+        ByteBuffer wrap2 = ByteBuffer.wrap("qwertyuio".getBytes());
+        wrap2.position(3);
+        wrap2.limit(6);
+        fileChannel.write(new ByteBuffer[]{wrap1,wrap2});
+        fileChannel.close();
     }
 
     private static void testCurrentPosition() throws IOException {
