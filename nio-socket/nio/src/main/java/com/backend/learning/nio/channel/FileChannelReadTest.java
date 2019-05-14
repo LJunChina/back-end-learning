@@ -45,7 +45,44 @@ public class FileChannelReadTest {
         /**2.验证{@link FileChannel#read(ByteBuffer[])}方法具有同步性*/
         System.out.println("============");
         testReadToBuffersSync();
+        System.out.println("=============");
+        /**部分批量读操作
+         * {@link java.nio.channels.ScatteringByteChannel#read(ByteBuffer[], int, int)}方法的作用是将通道中当前位置的字节序列
+         * 读入下标为offset开始的ByteBuffer[]数组中的remaining剩余空间中，并且连续写入length个ByteBuffer缓冲区。
+         * 该方法实现的是{@link java.nio.channels.ScatteringByteChannel#read(ByteBuffer[], int, int)}接口中的同名方法，而该
+         * 接口的父类是{@link java.nio.channels.ReadableByteChannel},故具备以下特性：
+         * 1.将通道当前位置的字节序列读入1个ByteBuffer缓冲区的remaining空间中
+         * 2.该方法是同步的*/
+        /**1.验证{@link java.nio.channels.ScatteringByteChannel#read(ByteBuffer[], int, int)}方法的返回值的意义*/
+
+        testReturnOfScatterRead();
     }
+
+    /**
+     * 验证返回值的意义P120
+     */
+    private static void testReturnOfScatterRead() throws IOException {
+        FileChannel fileChannel = FileChannel.open(Paths.get("/localnas\\g.txt"), StandardOpenOption.READ);
+        ByteBuffer byteBuffer1 = ByteBuffer.allocate(2);
+        ByteBuffer byteBuffer2 = ByteBuffer.allocate(2);
+        ByteBuffer[] byteBuffers = new ByteBuffer[]{byteBuffer1,byteBuffer2};
+        long i = fileChannel.read(byteBuffers, 0, 2);
+        System.out.println(i);
+        byteBuffer1.clear();
+        byteBuffer2.clear();
+
+        i = fileChannel.read(byteBuffers, 0, 2);
+        System.out.println(i);
+        byteBuffer1.clear();
+        byteBuffer2.clear();
+        /*到达流末尾*/
+        i = fileChannel.read(byteBuffers, 0, 2);
+        System.out.println(i);
+        byteBuffer1.clear();
+        byteBuffer2.clear();
+    }
+
+
 
     private static void testReadToBuffersSync() throws IOException, InterruptedException {
         FileChannel channel = FileChannel.open(Paths.get("/localnas\\a.txt"), StandardOpenOption.READ);
@@ -123,6 +160,7 @@ public class FileChannelReadTest {
         System.out.println(i);
         buffer1.clear();
         buffer2.clear();
+        //不使用rewind()的原因是因为rewind()未还原limit
         System.out.println(channel.read(new ByteBuffer[]{buffer1, buffer2}));
         buffer1.clear();
         buffer2.clear();
